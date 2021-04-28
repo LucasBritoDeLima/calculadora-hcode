@@ -15,7 +15,9 @@ class CalcController {
     this.setDisplayDateTime()
     setInterval(() => {
       this.setDisplayDateTime();
-    }, 1000)
+    }, 1000);
+
+    this.setLastNumberToDisplay();
   }
 
   addEventListenerAll(element, events, fn) {
@@ -26,10 +28,12 @@ class CalcController {
 
   clearAll() {
     this._operation = [];
+    this.setLastNumberToDisplay();
   }
 
   clearEntry() {
     this._operation.pop();
+    this.setLastNumberToDisplay();
   }
 
   setLastOperation(value) {
@@ -44,29 +48,44 @@ class CalcController {
     return (['+', '-', '*', '/', '%'].indexOf(value) > -1);
   }
 
-  pushOperation(value){
+  pushOperation(value) {
     this._operation.push(value);
-    if (this._operation.length > 3){
+    if (this._operation.length > 3) {
       this.calc();
     }
   }
 
-  calc(){
-    let last = this._operation.pop();
+  calc() {
+
+    let last = '';
+
+    if(this._operation.length > 3){
+      last = this._operation.pop();
+    }
+
     let result = eval(this._operation.join(""));
-    this._operation = [result, last];
+    if (last == '%') {
+      result /= 100;
+      this._operation = [result];
+    } else {
+      this._operation = [result];
+
+      if (last) this._operation.push(last);
+    }
     this.setLastNumberToDisplay();
   }
 
-  setLastNumberToDisplay(){
+  setLastNumberToDisplay() {
     let lastNumber;
-    
-    for (let i = this._operation.length-1; i >= 0; i--){
-      if(!this.isOperator(this._operation[i])){
+
+    for (let i = this._operation.length - 1; i >= 0; i--) {
+      if (!this.isOperator(this._operation[i])) {
         lastNumber = this._operation[i];
         break;
       }
     }
+
+    if(!lastNumber) lastNumber = 0;
 
     this.displayCalc = lastNumber;
   }
@@ -128,7 +147,7 @@ class CalcController {
         this.addOperation("%");
         break;
       case 'igual':
-
+        this.calc();
         break;
 
       case 'ponto':
@@ -180,7 +199,6 @@ class CalcController {
     });
     this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
   }
-
 
   get displayTime() {
     return this._timeEl.innerHTML;
