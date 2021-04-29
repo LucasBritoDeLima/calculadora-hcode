@@ -25,21 +25,21 @@ class CalcController {
     this.setLastNumberToDisplay();
     this.pasteFromClipboard();
 
-    document.querySelectorAll('.btn-ac').forEach(btn=>{
-      btn.addEventListener('dblclick', e=>{
+    document.querySelectorAll('.btn-ac').forEach(btn => {
+      btn.addEventListener('dblclick', e => {
         this.toggleAudio();
       });
     });
   }
 
-  pasteFromClipboard(){
+  pasteFromClipboard() {
     document.addEventListener('paste', e => {
       let text = e.clipboardData.getData('Text');
       this.displayCalc = parseFloat(text);
     })
   }
 
-  copyToClipboard(){
+  copyToClipboard() {
     let input = document.createElement('input');
     input.value = this.displayCalc;
     document.body.appendChild(input);
@@ -48,12 +48,12 @@ class CalcController {
     input.remove();
   }
 
-  toggleAudio(){
+  toggleAudio() {
     this._audioOnOff = !this._audioOnOff;
   }
 
-  playAudio(){
-    if (this._audioOnOff){
+  playAudio() {
+    if (this._audioOnOff) {
       this._audio.currentTime = 0;
       this._audio.play();
     }
@@ -104,9 +104,9 @@ class CalcController {
           this.addOperation(parseInt(e.key));
           break;
 
-      case 'c':
-        if(e.ctrlKey) this.copyToClipboard();
-        break;
+        case 'c':
+          if (e.ctrlKey) this.copyToClipboard();
+          break;
       }
     });
   }
@@ -352,6 +352,10 @@ class CalcController {
   }
 
   set displayCalc(value) {
+    if (value.toString().length > 10) {
+      this.setError();
+      return false;
+    }
     this._displayCalcEl.innerHTML = value;
   }
 
